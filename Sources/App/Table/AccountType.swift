@@ -12,4 +12,8 @@ struct AccountType: BaseSQLModel {
     var id: Int?
     /// 名称
     var name: String
+    
+    init(name: String) {
+        self.name = name
+    }
 }

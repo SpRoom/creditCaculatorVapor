@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import FluentMySQL
+import MySQL
 
 // password
 public let PasswordMaxCount = 18
@@ -41,4 +43,4 @@ struct DirPath {
     }
 }
 
-
+let sqltype: DatabaseIdentifier<MySQLDatabase> = .mysql
