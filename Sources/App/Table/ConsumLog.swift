@@ -16,8 +16,8 @@ struct ConsumLog : BaseSQLModel {
     var accountId: String
     /// 账户类型
     var accountTypeId: Int
-    /// 金额
-    var money: String
+    /// 金额;单位 分
+    var money: Int
     /// 消费类型
     var consumType: Int
     /// 消费时间

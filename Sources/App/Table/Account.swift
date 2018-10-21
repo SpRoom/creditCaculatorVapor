@@ -17,10 +17,12 @@ struct Account :  BaseSQLModel {
     var accountTypeId: Int
     /// 账户名（银行名）
     var name: String
-    /// 额度
-    var lines: Double
-    /// 临时额度
-    var teporaryLines: Double
+    /// 卡号
+    var cardNo: String
+    /// 额度;单位 分
+    var lines: Int
+    /// 临时额度;单位 分
+    var teporaryLines: Int
     /// 账单日
     var billDate: Int
     /// 还款日

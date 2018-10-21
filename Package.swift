@@ -17,14 +17,16 @@ let package = Package(
         .package(url: "https://github.com/vapor/redis.git", from: "3.0.0-rc"),
         .package(url: "https://github.com/vapor/multipart.git", from: "3.0.0"),
         // log format
-        .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", from: "3.1.0")
+        .package(url: "https://github.com/vapor-community/swiftybeaver-provider.git", from: "3.1.0"),
+        .package(url:"https://github.com/malcommac/SwiftDate.git",from: "5.0.0")
     ],
     targets: [
         .target(name: "App", dependencies: ["FluentMySQL", "Vapor","Authentication",
                                             "Crypto",
                                             "Redis",
                                             "Multipart",
-                                            "SwiftyBeaverProvider"]),
+                                            "SwiftyBeaverProvider",
+            "SwiftDate"]),
         .target(name: "Run", dependencies: ["App"]),
         .testTarget(name: "AppTests", dependencies: ["App"])
     ]

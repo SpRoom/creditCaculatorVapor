@@ -164,6 +164,15 @@
         }
       },
       {
+        "package": "SwiftDate",
+        "repositoryURL": "https://github.com/malcommac/SwiftDate.git",
+        "state": {
+          "branch": null,
+          "revision": "80e48d5a63c56936b3aba3da8015f05d2c0ea725",
+          "version": "5.0.10"
+        }
+      },
+      {
         "package": "SwiftyBeaver",
         "repositoryURL": "https://github.com/SwiftyBeaver/SwiftyBeaver.git",
         "state": {

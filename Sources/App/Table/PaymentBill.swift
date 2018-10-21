@@ -17,8 +17,8 @@ struct PaymentBill: BaseSQLModel {
     var accountType: Int
     /// 状态 0.未还 1.已还
     var status: Int
-    /// 金额
-    var money: Double
+    /// 金额;单位 分
+    var money: Int
     /// 还款日
     var reimnursementDate: TimeInterval
     

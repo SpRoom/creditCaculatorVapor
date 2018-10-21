@@ -13,6 +13,12 @@ import Crypto
 
 struct AccountModel {
     
+    /// 添加账户类型
+    ///
+    /// - Parameters:
+    ///   - name: 类型名
+    /// - Returns: 插入的数据
+    /// - Throws: <#throws value description#>
     func addAccountType(req: Request, name: String) throws -> Future<AccountType> {
         
         _ = try req.authed(User.self)!
@@ -27,6 +33,10 @@ struct AccountModel {
         
     }
     
+    /// 获取账户类型
+    ///
+    /// - Returns: 界面显示的数据列表
+    /// - Throws: <#throws value description#>
     func getAccountType(req: Request) throws -> Future<[AccountTypeVO]> {
         
         return req.withPooledConnection(to: sqltype, closure: { (conn)  in

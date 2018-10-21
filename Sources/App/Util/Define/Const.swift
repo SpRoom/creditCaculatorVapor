@@ -44,3 +44,22 @@ struct DirPath {
 }
 
 let sqltype: DatabaseIdentifier<MySQLDatabase> = .mysql
+
+
+func dateFor(string: String, format: String) -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    let date = dateFormatter.date(from: string)
+    return date!
+    
+}
+
+func dateFor(date: Date, format: String) -> String {
+    
+    let formatter = DateFormatter()
+    formatter.dateFormat = format
+    
+    let str = formatter.string(from: date)
+    
+    return str
+}

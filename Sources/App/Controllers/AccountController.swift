@@ -35,7 +35,12 @@ struct AccountController {
         let accountModel = AccountModel()
         
         return try accountModel.addAccountType(req: req, name: container.name).flatMap { (type)  in
-            let json = ResponseJSON<Empty>(status: .success)
+            var json : ResponseJSON<Empty>!
+            if type.id != nil {
+             json = ResponseJSON<Empty>(status: .success)
+            } else {
+                json = ResponseJSON<Empty>(status: .error)
+            }
             return try VaporResponseUtil.makeResponse(req: req, vo: json)
         }
     }
