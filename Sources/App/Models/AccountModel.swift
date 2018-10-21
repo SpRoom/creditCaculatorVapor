@@ -13,6 +13,32 @@ import Crypto
 
 struct AccountModel {
     
+    
+    /// 可用总余额
+    ///
+    /// - Parameter
+    /// - Returns:
+    /// - Throws:
+    func avaBalance(req: Request) throws -> Future<Int> {
+        
+        return try userAccounts(req: req).flatMap { (accounts)  in
+            
+           let balance = accounts.compactMap({ (account) in
+               let lines = account.lines
+                let temp = account.temporaryLines
+                let use = account.userLines
+            
+                return (lines + temp - use)
+                
+//                balance = balance +
+//                return account
+           }).reduce(0, +)
+            
+            return req.future(balance)
+        }
+        
+    }
+    
     /// 获取用户所有的账户
     ///
     /// - Parameter

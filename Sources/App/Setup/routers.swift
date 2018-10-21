@@ -26,4 +26,7 @@ fileprivate func routes(_ router: Router) throws {
     }
     
     try router.register(collection: UserActionController())
+    try router.register(collection: BillController())
+    try router.register(collection: AccountController())
+    try router.register(collection: LoanController())
 }

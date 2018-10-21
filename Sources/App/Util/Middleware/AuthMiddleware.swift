@@ -32,9 +32,7 @@ public final class AuthMiddleware: Middleware {
         
         logger.debug("path -- \(path)  method -- \(method)")
 
-        for aPath in authProviders {
-            
-            if path.contains(aPath) {
+   
                 let result = try checkToken(request)
                 
              return   result.flatMap { (tokenRs)  in
@@ -50,17 +48,6 @@ public final class AuthMiddleware: Middleware {
                             return try VaporResponseUtil.makeResponse(req: request, vo: vo)
                         })
                         
-//                      return  UserInfo.query(on: request).filter(\.userID == userID).first().flatMap({ (userinfo)  in
-//                            if let u = userinfo {
-//                                try request.auth(u)
-//                                return try next.respond(to: request)
-//                            }
-//                            let vo = ResponseVO<Empty>(status: ResponseCode.tokenNotExist)
-//                            return try VaporResponseUtil.makeResponse(req: request, vo: vo)
-//
-//                        })
-                        
-//                        return try next.respond(to: request)
                     case .null:
                         let vo = ResponseJSON<Empty>(status: ResponseCode.tokenNotExist)
                         return try VaporResponseUtil.makeResponse(req: request, vo: vo)
@@ -68,9 +55,7 @@ public final class AuthMiddleware: Middleware {
                         let vo = ResponseJSON<Empty>(status: ResponseCode.tokenExpire)
                         return try VaporResponseUtil.makeResponse(req: request, vo: vo)
                     }
-                }
-
-            }
+               
         }
 
         return try next.respond(to: request)

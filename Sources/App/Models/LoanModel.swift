@@ -42,7 +42,7 @@ struct LoanModel {
     /// - Returns: 插入的数据
     func addBills(req: Request,loanId: Int, borrowDate:TimeInterval, reimsementDate: Int,moneys: String) throws -> Future<[PaymentBill]> {
         
-        let _ = try req.authed(User.self)!
+        let user = try req.authed(User.self)!
         
         let moneyArr = moneys.components(separatedBy: ",").map {
             Int($0) ?? 0
@@ -62,7 +62,7 @@ struct LoanModel {
         
         let bills = moneyArr.compactMap { (money)  -> PaymentBill in
             
-            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970,isDel: false)
+            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970,isDel: false, userID: user.userID)
                reimsementDateRegion = reimsementDateRegion + 1.months
             return loan
         }

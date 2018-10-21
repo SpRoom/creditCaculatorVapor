@@ -23,5 +23,7 @@ struct PaymentBill: BaseSQLModel {
     var reimnursementDate: TimeInterval
     /// 是否删除
     var isDel: Bool
+    /// 用户唯一标识
+    var userID: String
 
 }

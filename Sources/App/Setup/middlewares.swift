@@ -24,8 +24,8 @@ public func setupMiddlewares(_ services: inout Services) throws {
     
     try services.register(AuthProvider())
     
-    let auth = AuthMiddleware(authPath: "api/v1/users","api/v1/ticket","api/v1/upload")
-    middlewares.use(auth)
+//    let auth = AuthMiddleware(authPath: "api/v1/users","api/v1/ticket","api/v1/upload")
+//    middlewares.use(auth)
     
     let params = ParametersLogMiddleware()
     middlewares.use(params)

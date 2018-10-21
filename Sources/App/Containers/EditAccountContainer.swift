@@ -21,6 +21,8 @@ struct EditAccountContainer : BaseContainer {
     var lines: Int
     /// 临时额度
     var temporary: Int
+    /// 已用额度
+    var userLines: Int?
     /// 账单日
     var billDate: Int
     /// 还款日

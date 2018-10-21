@@ -49,6 +49,40 @@ public final class ThrowsMiddleware :Middleware, ServiceType {
             
             // inspect the error type
             switch error {
+            case let decode as DecodingError:
+                switch decode {
+                case let .valueNotFound(type, context):
+                    reason = decode.reason
+                    status = decode.status
+                    headers = decode.headers
+                    msg = "\(context.codingPath[0].stringValue)不能为空"
+                    code = ResponseCode.parameterError.rawValue
+                case let .keyNotFound(key, context):
+                    reason = decode.reason
+                    status = decode.status
+                    headers = decode.headers
+                    msg = "\(key.stringValue)不能为空"
+                    code = ResponseCode.parameterError.rawValue
+                case let .typeMismatch(type, context):
+                    reason = decode.reason
+                    status = decode.status
+                    headers = decode.headers
+                    msg = "类型不匹配,请检查请求参数,\(context.codingPath[0].stringValue)应为\(type)类型"
+                    code = ResponseCode.parameterError.rawValue
+                case let .dataCorrupted(context):
+                    reason = decode.reason
+                    status = decode.status
+                    headers = decode.headers
+                    msg = "xxx不能为空"
+                    code = ResponseCode.parameterError.rawValue
+                }
+            case let urlencode as URLEncodedFormError:
+                reason = urlencode.reason
+                status = .badRequest
+                headers = [:]
+                msg = urlencode.reason
+                code = 100002
+                
             case let abort as AbortError:
                 // this is an abort error, we should use its status, reason, and headers
                 reason = abort.reason
