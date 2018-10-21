@@ -24,5 +24,6 @@ struct ConsumLog : BaseSQLModel {
     var time: TimeInterval
     /// 备注
     var remark: String
-    
+    /// 是否删除
+    var isDel: Bool
 }

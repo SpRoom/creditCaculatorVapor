@@ -22,12 +22,13 @@ struct Account :  BaseSQLModel {
     /// 额度;单位 分
     var lines: Int
     /// 临时额度;单位 分
-    var teporaryLines: Int
+    var temporaryLines: Int
     /// 账单日
     var billDate: Int
     /// 还款日
-    var reimnursementDate: Int
-    /// 已用额度
-    var userLines: Double
-    
+    var reimsementDate: Int
+    /// 已用额度;单位 分
+    var userLines: Int
+    /// 是否删除
+    var isDel: Bool
 }

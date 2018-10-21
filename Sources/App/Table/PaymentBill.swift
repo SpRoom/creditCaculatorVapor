@@ -21,6 +21,7 @@ struct PaymentBill: BaseSQLModel {
     var money: Int
     /// 还款日
     var reimnursementDate: TimeInterval
-    
+    /// 是否删除
+    var isDel: Bool
 
 }

@@ -19,5 +19,8 @@ struct Loan :  BaseSQLModel {
     var lines: Int
     /// 还款日
     var reimnursementDate: Int
+    /// 借款日
     var borrowDate: TimeInterval
+    /// 是否删除
+    var isDel: Bool
 }

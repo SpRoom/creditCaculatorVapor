@@ -20,17 +20,19 @@ struct User: BaseSQLModel,AuthContent {
     var username: String
     /// 登陆密码
     var password: String
-    
+    /// 是否删除
+    var isDel: Bool
     
     init(userID: String, username: String, password: String) {
         
         self.userID = userID
         self.username = username
         self.password = password
+        self.isDel = false
     }
     
     init(username: String, password: String) throws {
-        
+        self.isDel = false
         self.username = username
         
         let digest = BCryptDigest()

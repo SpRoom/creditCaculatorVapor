@@ -26,7 +26,7 @@ struct LoanModel {
         
         return req.withPooledConnection(to: sqltype, closure: { (conn)  in
             return conn.transaction(on: sqltype, { (conn) in
-                return Loan(id: nil, userID: user.userID,name:name, lines: lines, reimnursementDate: reimsementDate, borrowDate: borrowDate).save(on: conn).flatMap({ (loan)  in
+                return Loan(id: nil, userID: user.userID,name:name, lines: lines, reimnursementDate: reimsementDate, borrowDate: borrowDate,isDel: false).save(on: conn).flatMap({ (loan)  in
                     return req.future(loan)
                 })
             })
@@ -62,7 +62,7 @@ struct LoanModel {
         
         let bills = moneyArr.compactMap { (money)  -> PaymentBill in
             
-            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970)
+            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970,isDel: false)
                reimsementDateRegion = reimsementDateRegion + 1.months
             return loan
         }
@@ -79,4 +79,6 @@ struct LoanModel {
         
        
     }
+    
+    
 }
