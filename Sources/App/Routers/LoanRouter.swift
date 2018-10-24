@@ -12,7 +12,7 @@ extension LoanController : RouteCollection {
     
     func boot(router: Router) throws {
         
-        let apiV1 = router.grouped("api","v1")
+        let apiV1 = router.grouped("api","v1").grouped(AuthMiddleware())
         
         let loanV1 = apiV1.grouped("loan")
         

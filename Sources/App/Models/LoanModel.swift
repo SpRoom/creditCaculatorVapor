@@ -62,7 +62,7 @@ struct LoanModel {
         
         let bills = moneyArr.compactMap { (money)  -> PaymentBill in
             
-            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970,isDel: false, userID: user.userID)
+            let loan = PaymentBill.init(id: nil, accountId: loanId, accountType: 2, status: 0, money: money*100, reimnursementDate: reimsementDateRegion.date.timeIntervalSince1970,isDel: false, userID: user.userID)
                reimsementDateRegion = reimsementDateRegion + 1.months
             return loan
         }

@@ -51,13 +51,13 @@ public final class ThrowsMiddleware :Middleware, ServiceType {
             switch error {
             case let decode as DecodingError:
                 switch decode {
-                case let .valueNotFound(type, context):
+                case let .valueNotFound(_, context):
                     reason = decode.reason
                     status = decode.status
                     headers = decode.headers
                     msg = "\(context.codingPath[0].stringValue)不能为空"
                     code = ResponseCode.parameterError.rawValue
-                case let .keyNotFound(key, context):
+                case let .keyNotFound(key, _):
                     reason = decode.reason
                     status = decode.status
                     headers = decode.headers
@@ -69,7 +69,7 @@ public final class ThrowsMiddleware :Middleware, ServiceType {
                     headers = decode.headers
                     msg = "类型不匹配,请检查请求参数,\(context.codingPath[0].stringValue)应为\(type)类型"
                     code = ResponseCode.parameterError.rawValue
-                case let .dataCorrupted(context):
+                case let .dataCorrupted(_):
                     reason = decode.reason
                     status = decode.status
                     headers = decode.headers

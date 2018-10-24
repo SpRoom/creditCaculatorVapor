@@ -11,5 +11,4 @@ struct ChangePasswordContainer: BaseContainer {
     var username: String
     var password: String
     var newPassword: String
-    var verfyCode: String
 }
