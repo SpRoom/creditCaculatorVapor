@@ -17,5 +17,6 @@ extension LoanController : RouteCollection {
         let loanV1 = apiV1.grouped("loan")
         
         loanV1.post(LoanContainer.self, at: "addLoan", use: addLoan)
+        loanV1.post("loans", use: loans)
     }
 }

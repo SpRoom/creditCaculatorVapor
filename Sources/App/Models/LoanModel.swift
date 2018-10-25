@@ -13,6 +13,26 @@ import SwiftDate
 
 struct LoanModel {
     
+    func loans(req: Request) throws -> Future<[LoanVO]> {
+        let user = try req.authed(User.self)!
+        
+        
+        
+        return Loan.query(on: req).filter(\.userID == user.userID).filter(\.isDel == false).all().flatMap({ (loans) in
+            
+           return loans.compactMap({ (loan)  in
+               return PaymentBill.query(on: req).filter(\.accountType == 2).filter(\.accountId == loan.id!).filter(\.status == 0).first().flatMap({ (bill) in
+                    guard let bill = bill else {
+                       return req.future(LoanVO(id: loan.id!, name: loan.name, status: 1, principay: loan.lines, reimsementValue: 0, reimsementDate: loan.reimnursementDate))
+                    }
+                    return req.future(LoanVO(id: loan.id!, name: loan.name, status: 0, principay: loan.lines, reimsementValue: bill.money, reimsementDate: loan.reimnursementDate))
+                })
+            }).flatten(on: req)
+            
+            
+        })
+    }
+    
     /// 添加贷款
     ///
     /// - Parameters:
