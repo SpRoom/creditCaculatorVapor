@@ -140,6 +140,12 @@ struct UserActionController {
                         //                        return try VaporResponseUtil.makeResponse(req: req, vo: vo)
                         //                    }
                         
+                        let digest = try req.make(BCryptDigest.self)
+                        guard try digest.verify(inputContent.password, created: existUser.password) else {
+                            let vo = ResponseJSON<Empty>(status: .passwordError)
+                            return try VaporResponseUtil.makeResponse(req: req, vo: vo)
+                        }
+                        
                         if inputContent.newPassword.isPassword().0 == false {
                             let vo = ResponseJSON<Empty>(status: .error,
                                                        message: inputContent.newPassword.isPassword().1)
@@ -147,7 +153,8 @@ struct UserActionController {
                         }
                         
                         var user = existUser
-                        user.password = try req.make(BCryptDigest.self).hash(inputContent.newPassword)
+                        
+                        user.password = try digest.hash(inputContent.newPassword)
                         
                         return user.save(on: req).flatMap { newUser in
                             

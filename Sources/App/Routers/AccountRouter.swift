@@ -14,7 +14,7 @@ extension AccountController : RouteCollection {
     func boot(router: Router) throws {
         
         /**
-         *  @apidoc account
+         *  @apidoc credictCaculator
          *  @apiVersion 1.0
          *  @apiBaseURL http://localhost:8080
          *
@@ -26,20 +26,70 @@ extension AccountController : RouteCollection {
         
         let accountV1 = apiV1.grouped("account")
         
-        
-        accountV1.post(NameContainer.self, at: "addAccountType", use: addAccountType)
-        accountV1.post("accountTypes", use: accountTypes)
-        accountV1.post(AccountContainer.self, at: "addAccount", use: addAccount)
-        accountV1.post(EditAccountContainer.self, at: "editAccount", use: editAccount)
         /**
-         *  @api post /api/v1/account/account 获取账户信息
+         *  @api post /api/v1/account/addAccountType 添加账户类型
          *  @apiGroup account
-         * 
-         *  @apiParam id int 对应账户ID
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam name String 账户名
          *
          *  @apiSuccess 1000 OK
          *  @apiExample json
          *  { "id" : 1 }
+         */
+        accountV1.post(NameContainer.self, at: "addAccountType", use: addAccountType)
+        /**
+         *  @api post /api/v1/account/accountTypes 获取账户类型
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *
+         *  @apiSuccess 1000 OK
+         */
+        accountV1.post("accountTypes", use: accountTypes)
+        /**
+         *  @api post /api/v1/account/addAccount 添加账户
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam accountTypeId int 账户分类id
+         *   @apiParam name String 账户名
+         *   @apiParam cardNo String 卡号
+         *   @apiParam lines int 额度 单位为分
+         *   @apiParam temporary int 临时额度 单位为分
+         *   @apiParam billDate int 账单日
+         *   @apiParam reimsementDate int 还款日
+         *
+         *  @apiSuccess 1000 OK
+         */
+        accountV1.post(AccountContainer.self, at: "addAccount", use: addAccount)
+        /**
+         *  @api post /api/v1/account/editAccount 编辑账户信息
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam id int 对应账户ID
+         *
+         *  @apiSuccess 1000 OK
+         *
+         */
+        accountV1.post(EditAccountContainer.self, at: "editAccount", use: editAccount)
+        /**
+         *  @api post /api/v1/account/account 获取账户信息
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam id int 对应账户ID
+         *   @apiParam accountTypeId int 账户分类id
+         *   @apiParam name String 账户名
+         *   @apiParam cardNo String 卡号
+         *   @apiParam lines int 额度 单位为分
+         *   @apiParam temporary int 临时额度 单位为分
+         *   @apiParam billDate int 账单日
+         *   @apiParam reimsementDate int 还款日
+         *
+         *  @apiSuccess 1000 OK
+         *
          */
         accountV1.post(IDContainer.self, at: "account", use: account)
     }
