@@ -65,7 +65,7 @@ struct AccountModel {
     ///   - billDate: 账单日
     ///   - reimsementDate: 还款日
     /// - Returns: 编辑后的数据
-    func editAccount(req: Request,id: Int, name: String, cardNo: String, accountTypeId: Int, lines: Int, temporaryLines: Int, billDate: Int, reimsementDate: Int) -> Future<Account> {
+    func editAccount(req: Request,id: Int, name: String, cardNo: String, accountTypeId: Int, lines: Int, temporaryLines: Int,useLines: Int, billDate: Int, reimsementDate: Int) -> Future<Account> {
         
         return accountInfo(req: req, id: id).flatMap { (account)  in
             guard var acc = account else {
@@ -79,6 +79,7 @@ struct AccountModel {
             acc.temporaryLines = temporaryLines
             acc.billDate = billDate
             acc.reimsementDate = reimsementDate
+            acc.userLines = useLines
             
             return req.withPooledConnection(to: sqltype, closure: { (conn)  in
                 return conn.transaction(on: sqltype, { (conn)  in

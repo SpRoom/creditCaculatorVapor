@@ -26,6 +26,18 @@ extension AccountController : RouteCollection {
         
         let accountV1 = apiV1.grouped("account")
         
+        
+        /*
+         *  @api post /api/v1/account/accountTypes 获取账户列表
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *
+         *  @apiSuccess 1000 OK
+         */
+        accountV1.post("accountList", use: accountList)
+        
+        
         /**
          *  @api post /api/v1/account/addAccountType 添加账户类型
          *  @apiGroup account
@@ -69,6 +81,13 @@ extension AccountController : RouteCollection {
          *  @apiRequest
          *  @apiHeader X-AUTH-TOKEN token
          *  @apiParam id int 对应账户ID
+         *   @apiParam accountTypeId int 账户分类id
+         *   @apiParam name String 账户名
+         *   @apiParam cardNo String 卡号
+         *   @apiParam lines int 额度 单位为分
+         *   @apiParam temporary int 临时额度 单位为分
+         *   @apiParam billDate int 账单日
+         *   @apiParam reimsementDate int 还款日
          *
          *  @apiSuccess 1000 OK
          *
@@ -77,16 +96,10 @@ extension AccountController : RouteCollection {
         /**
          *  @api post /api/v1/account/account 获取账户信息
          *  @apiGroup account
+         *
          *  @apiRequest
          *  @apiHeader X-AUTH-TOKEN token
          *  @apiParam id int 对应账户ID
-         *   @apiParam accountTypeId int 账户分类id
-         *   @apiParam name String 账户名
-         *   @apiParam cardNo String 卡号
-         *   @apiParam lines int 额度 单位为分
-         *   @apiParam temporary int 临时额度 单位为分
-         *   @apiParam billDate int 账单日
-         *   @apiParam reimsementDate int 还款日
          *
          *  @apiSuccess 1000 OK
          *

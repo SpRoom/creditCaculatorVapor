@@ -10,6 +10,23 @@ import Vapor
 
 struct AccountController {
     
+    // 账户列表
+    func accountList(_ req: Request) throws -> Future<Response> {
+        
+        let accountModel = AccountModel()
+        
+        return try accountModel.userAccounts(req: req).flatMap { (account)  in
+        
+        let list = account.compactMap({ (account) -> AccountVO  in
+            AccountVO.init(id: account.id!, accountTypeId: account.accountTypeId, name: account.name, cardNo: account.cardNo, lines: account.lines, temporary: account.temporaryLines, billDate: account.billDate, reimsementDate: account.reimsementDate)
+        })
+        
+        let vo = ResponseJSON(data: list)
+        return try VaporResponseUtil.makeResponse(req: req, vo: vo)
+        }
+        
+    }
+    
     /// 账户信息
     ///
     /// - Parameters:
@@ -20,12 +37,16 @@ struct AccountController {
         
         let accountModel = AccountModel()
         
+        
+        
         return accountModel.accountInfo(req: req, id: container.id).flatMap({ (account)  in
             guard let account = account else {
                 throw ResponseError(code: .error, message: "账户不存在")
             }
             
-            return try VaporResponseUtil.makeResponse(req: req, vo: ResponseJSON(data: AccountVO.init(id: account.id!, accountTypeId: account.accountTypeId, name: account.name, cardNo: account.cardNo, lines: account.lines, temporary: account.temporaryLines, billDate: account.billDate, reimsementDate: account.reimsementDate)))
+            let json = AccountInfoVO.init(id: account.id!, accountTypeId: account.accountTypeId, name: account.name, cardNo: account.cardNo, lines: account.lines, temporary: account.temporaryLines, billDate: account.billDate, reimsementDate: account.reimsementDate, userLines: account.userLines)
+            
+            return try VaporResponseUtil.makeResponse(req: req, vo: ResponseJSON(data: json))
             
         })
     }
@@ -46,10 +67,11 @@ struct AccountController {
         let temporarylines = container.temporary
         let billdate = container.billDate
         let reimsement = container.reimsementDate
+        let useLines = container.userLines ?? 0
         
         let accountModel = AccountModel()
         
-       return accountModel.editAccount(req: req, id: id, name: name, cardNo: cardno, accountTypeId: accountTypeId, lines: lines, temporaryLines: temporarylines, billDate: billdate, reimsementDate: reimsement).flatMap { (account) in
+        return accountModel.editAccount(req: req, id: id, name: name, cardNo: cardno, accountTypeId: accountTypeId, lines: lines, temporaryLines: temporarylines,useLines: useLines, billDate: billdate, reimsementDate: reimsement).flatMap { (account) in
             let json = ResponseJSON<Empty>(status: .success)
             return try VaporResponseUtil.makeResponse(req: req, vo: json)
         }
