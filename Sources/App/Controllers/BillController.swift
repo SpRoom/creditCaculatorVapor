@@ -10,6 +10,27 @@ import Vapor
 
 struct BillController {
     
+    /// 添加信用卡账单
+    ///
+    /// - Parameters:
+    ///   - req: <#req description#>
+    ///   - container: <#container description#>
+    func addCreditMonthBill(_ req: Request, container: AddBillContainer) throws -> Future<Response> {
+        
+        let billModel = BillModel()
+        
+       return try billModel.addCreditMonthBill(req: req, accountId: container.accountId, accountType: container.accountType, money: container.money, reimnursementDate: container.reimsementDate).flatMap { (bill)  in
+           var json : ResponseJSON<Empty>!
+            if let _ = bill.id {
+                json = ResponseJSON<Empty>(status: .success)
+            } else {
+                json = ResponseJSON<Empty>(status: .error)
+            }
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        }
+        
+    }
+    
     
     /// 查询自己所有的账单
     ///

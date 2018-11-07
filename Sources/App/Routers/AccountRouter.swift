@@ -26,7 +26,15 @@ extension AccountController : RouteCollection {
         
         let accountV1 = apiV1.grouped("account")
         
-        
+        /*
+         *  @api post /api/v1/account/balance 可用总额
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *
+         *  @apiSuccess 1000 OK
+         */
+        accountV1.post("balance", use: balance)
         
         /**
          *  @api post /api/v1/account/delAccount 删除账户

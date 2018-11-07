@@ -14,6 +14,40 @@ import SwiftDate
 
 struct BillModel {
     
+    /// 添加信用卡账单
+    ///
+    /// - Parameters:
+    ///   - req:
+    ///   - accountId: 账户ID
+    ///   - accountTypeId: 账单类型 1.信用卡 2.贷款分期 3.信用卡分期
+    ///   - money: 金额;单位 分
+    ///   - reimnursementDate: 还款日
+    /// - Returns:
+    /// - Throws:
+    func addCreditMonthBill(req: Request, accountId: Int, accountType: Int, money: Int, reimnursementDate: TimeInterval) throws -> Future<PaymentBill> {
+        
+        let userid = try req.authed(User.self)!.userID
+        
+       return Account.query(on: req).filter(\.userID == userid).filter(\.id == accountId).first().flatMap { (acc) in
+            guard let acc = acc else {
+                throw ResponseError(code: ResponseCode.error, message: "请选择正确的账户")
+            }
+            
+            let bill = PaymentBill.init(id: nil, accountId: acc.id!, accountType: accountType, status: 0, money: money, reimnursementDate: reimnursementDate, isDel: false, userID: userid)
+            
+            return req.withPooledConnection(to: sqltype, closure: { (conn) in
+                return conn.transaction(on: sqltype, { (conn)  in
+                    return bill.save(on: conn).flatMap({ (bill) in
+                        return req.future(bill)
+                    })
+                })
+            })
+        }
+        
+       
+        
+    }
+    
     /// 查询自己所有的账单
     ///
     /// - Parameter

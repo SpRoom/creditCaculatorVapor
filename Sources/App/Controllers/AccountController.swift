@@ -10,6 +10,20 @@ import Vapor
 
 struct AccountController {
     
+        /// 可用总余额
+    func balance(_ req: Request) throws -> Future<Response> {
+        
+        let accountModel = AccountModel()
+        
+        return try accountModel.avaBalance(req: req).flatMap { (lines)  in
+            let json = ResponseJSON(data: BalanceVO(lines: lines))
+            
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        }
+        
+    }
+    
+    /// 删除账户
     func delAccount(_ req: Request, container: IDContainer) throws -> Future<Response> {
         
         let accountModel = AccountModel()
