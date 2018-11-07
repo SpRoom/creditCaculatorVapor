@@ -27,6 +27,18 @@ extension AccountController : RouteCollection {
         let accountV1 = apiV1.grouped("account")
         
         
+        
+        /**
+         *  @api post /api/v1/account/delAccount 删除账户
+         *  @apiGroup account
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam id int 对应账户ID
+         *
+         *  @apiSuccess 1000 OK
+         *
+         */
+        accountV1.post(IDContainer.self, at: "delAccount", use: delAccount)
         /*
          *  @api post /api/v1/account/accountTypes 获取账户列表
          *  @apiGroup account

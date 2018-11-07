@@ -13,6 +13,33 @@ import Crypto
 
 struct AccountModel {
     
+    // 删除账户
+    func delAccount(req: Request, id: Int) throws -> Future<Account> {
+        
+        let user = try req.authed(User.self)!
+        
+        
+        return accountInfo(req: req, id: id).flatMap { (account)  in
+            guard var acc = account else {
+                throw ResponseError(code: .error, message: "对应账户不存在")
+            }
+            
+            guard acc.userID == user.userID else {
+                throw ResponseError(code: ResponseCode.error, message: "请确认当前账户是否是你的")
+            }
+            
+            acc.isDel = true
+            
+            return req.withPooledConnection(to: sqltype, closure: { (conn)  in
+                return conn.transaction(on: sqltype, { (conn)  in
+                    return acc.save(on: conn).flatMap({ account in
+                        return req.future(account)
+                    })
+                })
+            })
+        }
+    }
+    
     
     /// 可用总余额
     ///
@@ -47,7 +74,7 @@ struct AccountModel {
     func userAccounts(req: Request) throws -> Future<[Account]> {
         let user = try req.authed(User.self)!
         
-       return Account.query(on: req).filter(\.userID == user.userID).all().flatMap { (acs) in
+       return Account.query(on: req).filter(\.userID == user.userID).filter(\.isDel == false).all().flatMap { (acs) in
             return req.future(acs)
         }
         
@@ -65,11 +92,15 @@ struct AccountModel {
     ///   - billDate: 账单日
     ///   - reimsementDate: 还款日
     /// - Returns: 编辑后的数据
-    func editAccount(req: Request,id: Int, name: String, cardNo: String, accountTypeId: Int, lines: Int, temporaryLines: Int,useLines: Int, billDate: Int, reimsementDate: Int) -> Future<Account> {
-        
+    func editAccount(req: Request,id: Int, name: String, cardNo: String, accountTypeId: Int, lines: Int, temporaryLines: Int,useLines: Int, billDate: Int, reimsementDate: Int) throws -> Future<Account> {
+        let user = try req.authed(User.self)!
         return accountInfo(req: req, id: id).flatMap { (account)  in
             guard var acc = account else {
                 throw ResponseError(code: .error, message: "对应账户不存在")
+            }
+            
+            guard acc.userID == user.userID else {
+                throw ResponseError(code: ResponseCode.error, message: "请确认当前账户是否是你的")
             }
             
             acc.name = name

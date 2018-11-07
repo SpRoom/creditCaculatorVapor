@@ -10,6 +10,16 @@ import Vapor
 
 struct AccountController {
     
+    func delAccount(_ req: Request, container: IDContainer) throws -> Future<Response> {
+        
+        let accountModel = AccountModel()
+        
+        return try accountModel.delAccount(req: req, id: container.id).flatMap { (account) in
+            let json = ResponseJSON<Empty>(status: .success, message: "删除成功")
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        }
+    }
+    
     // 账户列表
     func accountList(_ req: Request) throws -> Future<Response> {
         
@@ -71,7 +81,7 @@ struct AccountController {
         
         let accountModel = AccountModel()
         
-        return accountModel.editAccount(req: req, id: id, name: name, cardNo: cardno, accountTypeId: accountTypeId, lines: lines, temporaryLines: temporarylines,useLines: useLines, billDate: billdate, reimsementDate: reimsement).flatMap { (account) in
+        return try accountModel.editAccount(req: req, id: id, name: name, cardNo: cardno, accountTypeId: accountTypeId, lines: lines, temporaryLines: temporarylines,useLines: useLines, billDate: billdate, reimsementDate: reimsement).flatMap { (account) in
             let json = ResponseJSON<Empty>(status: .success)
             return try VaporResponseUtil.makeResponse(req: req, vo: json)
         }
