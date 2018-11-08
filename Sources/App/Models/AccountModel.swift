@@ -13,6 +13,19 @@ import Crypto
 
 struct AccountModel {
     
+    func accountTypeName(req: Request, id: Int) throws -> Future<AccountType> {
+        
+        return AccountType.query(on: req).filter(\.id == id).first().flatMap({ (type)  in
+            
+            guard let type = type else {
+                throw ResponseError(code: ResponseCode.error, message: "账户类型错误")
+            }
+            
+            return req.future(type)
+            
+        })
+    }
+    
     // 删除账户
     func delAccount(req: Request, id: Int) throws -> Future<Account> {
         

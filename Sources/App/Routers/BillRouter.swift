@@ -18,7 +18,7 @@ extension BillController : RouteCollection {
         
         
         /**
-         *  @api post /api/v1/bill/addCreditMonthBill 查询自己所有的账单
+         *  @api post /api/v1/bill/addCreditMonthBill 添加信用卡月账单
          *  @apiGroup Bill
          *
          *  @apiRequest

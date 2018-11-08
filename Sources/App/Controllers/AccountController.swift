@@ -10,6 +10,34 @@ import Vapor
 
 struct AccountController {
     
+    // 消费列表可用卡
+    func consumAccountList(_ req: Request) throws -> Future<Response> {
+        
+        let accountModel = AccountModel()
+        
+        
+        return try accountModel.userAccounts(req: req).flatMap { (accounts)  in
+            
+            return try accounts.compactMap({ (account) -> Future<ConsumptionCreditVO>  in
+                
+                let total = account.lines+account.temporaryLines
+                let balance = total - account.userLines
+                
+                return  try accountModel.accountTypeName(req: req, id: account.accountTypeId).flatMap({ (type)  in
+                    let vo = ConsumptionCreditVO.init(id: account.id!, accountTypeId: account.accountTypeId, accountType: type.name, name: account.name, cardNo: account.cardNo, lines:total , balance: balance, billDate: account.billDate, reimsementDate: account.reimsementDate,statusMsg:"")
+                    return req.future(vo)
+                })
+                
+                
+            }).flatten(on: req).flatMap({ (list)  in
+                let vo = ResponseJSON(data: list)
+                return try VaporResponseUtil.makeResponse(req: req, vo: vo)
+            })
+            
+            
+        }
+    }
+    
         /// 可用总余额
     func balance(_ req: Request) throws -> Future<Response> {
         
