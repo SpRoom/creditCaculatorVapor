@@ -29,17 +29,23 @@ struct BillModel {
         let userid = try req.authed(User.self)!.userID
         
        return Account.query(on: req).filter(\.userID == userid).filter(\.id == accountId).first().flatMap { (acc) in
-            guard let acc = acc else {
+            guard var acc = acc else {
                 throw ResponseError(code: ResponseCode.error, message: "请选择正确的账户")
             }
+        
+        acc.userLines = acc.userLines + money
+        
             
             let bill = PaymentBill.init(id: nil, accountId: acc.id!, accountType: accountType, status: 0, money: money, reimnursementDate: reimnursementDate, isDel: false, userID: userid)
             
             return req.withPooledConnection(to: sqltype, closure: { (conn) in
                 return conn.transaction(on: sqltype, { (conn)  in
-                    return bill.save(on: conn).flatMap({ (bill) in
-                        return req.future(bill)
+                    return acc.save(on: conn).flatMap({ (acc)  in
+                        return bill.save(on: conn).flatMap({ (bill) in
+                            return req.future(bill)
+                        })
                     })
+                    
                 })
             })
         }

@@ -25,6 +25,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     registerFlunet(&services)
    
     
-//    setup(host: "0.0.0.0", port: 9000, services: &services)
+    setup(host: "0.0.0.0", port: 8001, services: &services)
 
 }
