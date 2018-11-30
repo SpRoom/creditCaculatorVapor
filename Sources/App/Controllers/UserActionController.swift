@@ -27,7 +27,10 @@ struct UserActionController {
         
         return first.flatMap({ (exiUser) in
             
-            
+            guard exiUser != nil else {
+                
+                throw ResponseError(code: ResponseCode.userExist)
+            }
             
             let user = try User(username: paramers.username, password: paramers.password)
             

@@ -13,6 +13,78 @@ import SwiftDate
 
 
 struct BillModel {
+
+    /// POS机列表
+    func poslist(req: Request) throws -> Future<[POSDevice]> {
+        let userid = try req.authed(User.self)!.userID
+        
+        return POSDevice.query(on: req).filter(\.userID == userid).all().flatMap { (poses)  in
+            return req.future(poses)
+        }
+    }
+    
+    // 添加POS机
+    func addPos(req: Request, name: String) throws -> Future<POSDevice> {
+        
+        let userid = try req.authed(User.self)!.userID
+        
+        let dev = POSDevice.init(id: nil, userID: userid, name: name)
+        
+        return req.withPooledConnection(to: sqltype, closure: { (conn) in
+            return conn.transaction(on: sqltype, { (conn)  in
+                return dev.save(on: conn).flatMap({ (acc)  in
+                    return req.future(acc)
+                })
+                
+            })
+        })
+    }
+    
+    /// 消费
+    ///
+    /// - Parameters:
+    ///   - accountId: 账户id
+    ///   - consumptionType: 消费类型 1.消费  2.信用卡分期
+    ///   - money: 金额 单位 ：分
+    ///   - consumptionDate: 消费日
+    ///   - device: 设备ID 设备为 0 的时候 不属于自己添加的设备列表
+    ///   - remark: 备注
+    /// - Returns:
+    /// - Throws:
+    func addConsumptionBill(req: Request, accountId: Int, consumptionType: Int, money: Int, consumptionDate: TimeInterval, device: Int, remark: String) throws -> Future<CreditConsumptionBill> {
+        let userid = try req.authed(User.self)!.userID
+        
+        return Account.query(on: req).filter(\.userID == userid).filter(\.id == accountId).first().flatMap({ (acc)  in
+            guard var acc = acc else {
+                throw ResponseError(code: ResponseCode.error, message: "请选择正确的账户")
+            }
+            acc.userLines = acc.userLines + money
+            return POSDevice.query(on: req).filter(\.userID == userid).first().flatMap({ (pos)  in
+                
+                guard (pos != nil) || device == 0 else {
+                    throw ResponseError(code: ResponseCode.error, message: "当前设备不属于您")
+                }
+                
+                let bill = CreditConsumptionBill.init(id: nil, accountId: accountId, consumptionType: consumptionType, money: money, consumptionDate: consumptionDate, device: device, remark: remark, isDel: false)
+                
+                return req.withPooledConnection(to: sqltype, closure: { (conn) in
+                    return conn.transaction(on: sqltype, { (conn)  in
+                        return acc.save(on: conn).flatMap({ (acc)  in
+                            return bill.save(on: conn).flatMap({ (bill) in
+                                return req.future(bill)
+                            })
+                        })
+                        
+                    })
+                })
+                
+            })
+        })
+        
+        
+        
+        
+    }
     
     /// 添加信用卡账单
     ///
@@ -72,7 +144,7 @@ struct BillModel {
                     return Loan.query(on: req).filter(\.id == bill.accountId).filter(\.isDel == false).first().flatMap({ (loan) -> Future<BillVO?> in
                         var billVO : BillVO?
                         if let loan = loan {
-                            billVO =  BillVO(id: bill.id!, accountName: loan.name, accountNo: "loan", accountType: bill.accountType, status: bill.status, money: bill.money, reimnursementDate: bill.reimnursementDate)
+                            billVO =  BillVO(id: bill.id!, accountName: loan.name, accountNo: "", accountType: bill.accountType, status: bill.status, money: bill.money, reimnursementDate: bill.reimnursementDate)
                         }
                         return req.future(billVO)
                     })

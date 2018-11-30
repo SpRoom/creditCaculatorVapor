@@ -10,7 +10,50 @@ import Vapor
 
 struct BillController {
     
-    /// 添加信用卡账单
+    // POS机列表
+    func posList(_ req: Request) throws -> Future<Response> {
+        
+        let billModel = BillModel()
+        
+        return try billModel.poslist(req: req).flatMap({ (poses) in
+            let json = ResponseJSON(data: poses)
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        })
+    }
+    
+    // 添加POS机
+    func addPos(_ req: Request, container: NameContainer) throws -> Future<Response> {
+        
+        let billModel = BillModel()
+        
+        return try billModel.addPos(req: req, name: container.name).flatMap({ (dev)  in
+            var json : ResponseJSON<Empty>!
+            if let _ = dev.id {
+                json = ResponseJSON<Empty>(status: .success)
+            } else {
+                json = ResponseJSON<Empty>(status: .error)
+            }
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        })
+    }
+    
+    /// 添加消费账单
+    func addConsumptionBill(_ req: Request, container: addConsumptionContainer)  throws -> Future<Response>  {
+        
+        let billModel = BillModel()
+        
+       return try billModel.addConsumptionBill(req: req, accountId: container.accountId, consumptionType: container.consumptionType, money: container.money, consumptionDate: container.consumptionDate, device: container.device, remark: container.remark).flatMap { (bill)  in
+            var json : ResponseJSON<Empty>!
+            if let _ = bill.id {
+                json = ResponseJSON<Empty>(status: .success)
+            } else {
+                json = ResponseJSON<Empty>(status: .error)
+            }
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        }
+    }
+    
+    /// 添加信用卡月账单
     ///
     /// - Parameters:
     ///   - req: <#req description#>

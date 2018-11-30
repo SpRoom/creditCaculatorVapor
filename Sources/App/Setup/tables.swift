@@ -22,8 +22,8 @@ final class SQLConfig {
         var databases = DatabasesConfig()
         let mysql = MySQLDatabase(config: MySQLDatabaseConfig(hostname: mysqlHostname, port: mysqlPort, username: mysqlUsername, password: mysqlPassword, database: mysqlDatabase, characterSet: .utf8_general_ci, transport: .cleartext))
         
-        databases.add(database: mysql, as: .mysql)
-        databases.enableLogging(on: .mysql)
+        databases.add(database: mysql, as: sqltype)
+        databases.enableLogging(on: sqltype)
         
         return databases
     }
@@ -55,17 +55,19 @@ fileprivate func registerTable() -> MigrationConfig {
     /// Configure migrations
     var migrations = MigrationConfig()
  
-    migrations.add(model: AccessToken.self, database: .mysql)
-    migrations.add(model: RefreshToken.self, database: .mysql)
-    migrations.add(model: User.self, database: .mysql)
+    migrations.add(model: AccessToken.self, database: sqltype)
+    migrations.add(model: RefreshToken.self, database: sqltype)
+    migrations.add(model: User.self, database: sqltype)
     
-    migrations.add(model: Account.self, database: .mysql)
-    migrations.add(model: AccountType.self, database: .mysql)
-    migrations.add(model: ConsumLog.self, database: .mysql)
-    migrations.add(model: ConsumSubType.self, database: .mysql)
-    migrations.add(model: ConsumType.self, database: .mysql)
-    migrations.add(model: Loan.self, database: .mysql)
-    migrations.add(model: PaymentBill.self, database: .mysql)
+    migrations.add(model: Account.self, database: sqltype)
+    migrations.add(model: AccountType.self, database: sqltype)
+    migrations.add(model: ConsumLog.self, database: sqltype)
+    migrations.add(model: ConsumSubType.self, database: sqltype)
+    migrations.add(model: ConsumType.self, database: sqltype)
+    migrations.add(model: Loan.self, database: sqltype)
+    migrations.add(model: PaymentBill.self, database: sqltype)
+    migrations.add(model: CreditConsumptionBill.self, database: sqltype)
+    migrations.add(model: POSDevice.self, database: sqltype)
     
     return migrations
 }
