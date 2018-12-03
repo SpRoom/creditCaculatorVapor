@@ -13,6 +13,47 @@ import SwiftDate
 
 
 struct BillModel {
+    
+    func repay(req: Request, billId: Int, money: Int) throws -> Future<PaymentBill> {
+        
+        let userid = try req.authed(User.self)!.userID
+        
+        return PaymentBill.query(on: req).filter(\.userID == userid).filter(\.id == billId).first().flatMap { (bill)  in
+            guard var bill = bill else {
+                throw ResponseError(code: ResponseCode.error, message: "账单不存在")
+            }
+            
+            guard money > 0 else {
+                throw ResponseError(code: ResponseCode.error, message: "金额不能为小于1分")
+            }
+            
+           var releasemoney = bill.money - money
+            
+            if releasemoney <= 0 {
+                releasemoney = 0
+                bill.status = 1
+            }
+            bill.money = releasemoney
+            
+           return Account.query(on: req).filter(\.id == bill.accountId).filter(\.userID == userid).first().flatMap({ (account)  in
+            guard var account = account else {
+                throw ResponseError(code: ResponseCode.error, message: "账单所属账户错误")
+            }
+            account.userLines = account.userLines - money
+            
+            return req.withPooledConnection(to: sqltype, closure: { (conn)  in
+                return conn.transaction(on: sqltype, { (conn)  in
+                    return account.save(on: conn).flatMap({ (acc) in
+                        return bill.save(on: conn).flatMap({ (bill) in
+                            return req.future(bill)
+                        })
+                    })
+                })
+            })
+            
+            })
+        }
+    }
 
     /// POS机列表
     func poslist(req: Request) throws -> Future<[POSDevice]> {

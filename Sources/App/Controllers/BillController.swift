@@ -10,6 +10,15 @@ import Vapor
 
 struct BillController {
     
+    func repay(_ req: Request, container: RepayContainer) throws -> Future<Response> {
+        
+        let billModel = BillModel()
+        
+        return try billModel.repay(req: req, billId: container.billId, money: container.money).flatMap({ (bill)  in
+            return try VaporResponseUtil.makeResponse(req: req, vo: ResponseJSON<Empty>(status: .success))
+        })
+    }
+    
     // POS机列表
     func posList(_ req: Request) throws -> Future<Response> {
         

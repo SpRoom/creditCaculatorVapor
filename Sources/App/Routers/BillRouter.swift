@@ -16,6 +16,21 @@ extension BillController : RouteCollection {
         
         let billV1 = apiV1.grouped("bill")
         
+        
+        /**
+         *  @api post /api/v1/bill/repay 还款
+         *  @apiGroup Bill
+         *
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *  @apiParam billId int 账单id
+         *  @apiParam money int 金额 单位： 分
+         *
+         *  @apiSuccess 1000 OK
+         *
+         */
+        billV1.post(RepayContainer.self, at: "repay", use: repay)
+        
         /**
          *  @api post /api/v1/bill/poslist POS机列表
          *  @apiGroup Bill
