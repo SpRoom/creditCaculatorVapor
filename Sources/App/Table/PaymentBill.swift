@@ -25,5 +25,6 @@ struct PaymentBill: BaseSQLModel {
     var isDel: Bool
     /// 用户唯一标识
     var userID: String
-
+    /// 添加时间
+    var createTime: TimeInterval
 }

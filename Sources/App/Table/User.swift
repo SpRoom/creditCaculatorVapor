@@ -22,6 +22,8 @@ struct User: BaseSQLModel,AuthContent {
     var password: String
     /// 是否删除
     var isDel: Bool
+    /// 添加时间
+    var createTime: TimeInterval
     
     init(userID: String, username: String, password: String) {
         
@@ -29,6 +31,7 @@ struct User: BaseSQLModel,AuthContent {
         self.username = username
         self.password = password
         self.isDel = false
+        self.createTime = Date().timeIntervalSince1970
     }
     
     init(username: String, password: String) throws {
@@ -39,6 +42,7 @@ struct User: BaseSQLModel,AuthContent {
         self.password = try digest.hash(password)
         
         self.userID = UUID().uuidString
+        self.createTime = Date().timeIntervalSince1970
     }
     
 }

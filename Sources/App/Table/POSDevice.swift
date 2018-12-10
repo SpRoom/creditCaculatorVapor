@@ -14,4 +14,6 @@ struct POSDevice : BaseSQLModel {
     var userID: String
     /// 设备名
     var name: String
+    /// 添加时间
+    var createTime: TimeInterval
 }

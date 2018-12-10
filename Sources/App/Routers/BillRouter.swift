@@ -92,6 +92,20 @@ extension BillController : RouteCollection {
          *
          */
         billV1.post(AddBillContainer.self, at: "addCreditMonthBill", use: addCreditMonthBill)
+        
+        
+        /**
+         *  @api post /api/v1/bill/remindbills 查询自己所有待还的账单
+         *  @apiGroup Bill
+         *
+         *  @apiRequest
+         *  @apiHeader X-AUTH-TOKEN token
+         *
+         *  @apiSuccess 1000 OK
+         *
+         */
+        billV1.post("remindbills", use: needRepaymentBills)
+        
         /**
          *  @api post /api/v1/bill/bills 查询自己所有的账单
          *  @apiGroup Bill

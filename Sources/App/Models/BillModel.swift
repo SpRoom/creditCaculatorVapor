@@ -41,11 +41,16 @@ struct BillModel {
             }
             account.userLines = account.userLines - money
             
+           let log = ConsumLog.init(id: nil, userID: userid, accountId: bill.accountId, accountTypeId: account.accountTypeId, money: money, consumType: 2, time: Date().timeIntervalSince1970, remark: "", isDel: false, createTime: Date().timeIntervalSince1970)
+            
             return req.withPooledConnection(to: sqltype, closure: { (conn)  in
                 return conn.transaction(on: sqltype, { (conn)  in
                     return account.save(on: conn).flatMap({ (acc) in
                         return bill.save(on: conn).flatMap({ (bill) in
-                            return req.future(bill)
+                            return log.save(on: conn).flatMap({ log in
+                                 return req.future(bill)
+                            })
+                           
                         })
                     })
                 })
@@ -69,7 +74,7 @@ struct BillModel {
         
         let userid = try req.authed(User.self)!.userID
         
-        let dev = POSDevice.init(id: nil, userID: userid, name: name)
+        let dev = POSDevice.init(id: nil, userID: userid, name: name, createTime: Date().timeIntervalSince1970)
         
         return req.withPooledConnection(to: sqltype, closure: { (conn) in
             return conn.transaction(on: sqltype, { (conn)  in
@@ -106,13 +111,17 @@ struct BillModel {
                     throw ResponseError(code: ResponseCode.error, message: "当前设备不属于您")
                 }
                 
-                let bill = CreditConsumptionBill.init(id: nil, accountId: accountId, consumptionType: consumptionType, money: money, consumptionDate: consumptionDate, device: device, remark: remark, isDel: false)
+                let bill = CreditConsumptionBill.init(id: nil, accountId: accountId, consumptionType: consumptionType, money: money, consumptionDate: consumptionDate, device: device, remark: remark, isDel: false, createTime: Date().timeIntervalSince1970)
+                
+                let log = ConsumLog.init(id: nil, userID: userid, accountId: accountId, accountTypeId: acc.accountTypeId, money: money, consumType: 1, time: Date().timeIntervalSince1970, remark: remark, isDel: false, createTime: Date().timeIntervalSince1970)
                 
                 return req.withPooledConnection(to: sqltype, closure: { (conn) in
                     return conn.transaction(on: sqltype, { (conn)  in
                         return acc.save(on: conn).flatMap({ (acc)  in
-                            return bill.save(on: conn).flatMap({ (bill) in
-                                return req.future(bill)
+                            return log.save(on: conn).flatMap({ (log) in
+                                return bill.save(on: conn).flatMap({ (bill) in
+                                    return req.future(bill)
+                                })
                             })
                         })
                         
@@ -149,7 +158,7 @@ struct BillModel {
         acc.userLines = acc.userLines + money
         
             
-            let bill = PaymentBill.init(id: nil, accountId: acc.id!, accountType: accountType, status: 0, money: money, reimnursementDate: reimnursementDate, isDel: false, userID: userid)
+        let bill = PaymentBill.init(id: nil, accountId: acc.id!, accountType: accountType, status: 0, money: money, reimnursementDate: reimnursementDate, isDel: false, userID: userid, createTime: Date().timeIntervalSince1970)
             
             return req.withPooledConnection(to: sqltype, closure: { (conn) in
                 return conn.transaction(on: sqltype, { (conn)  in
@@ -165,6 +174,49 @@ struct BillModel {
         
        
         
+    }
+    
+    /// 待还款账单
+    func needRepaymentBills(req: Request) throws -> Future<[BillVO]> {
+        
+        let userid = try req.authed(User.self)!.userID
+        
+        return PaymentBill.query(on: req).filter(\PaymentBill.userID == userid).filter(\.status == 0).filter(\.isDel == false).sort(\PaymentBill.reimnursementDate, .ascending).all().flatMap { (bills)  in
+            
+            return bills.compactMap({ (bill) -> Future<BillVO?> in
+                
+                if bill.accountType == 2 {
+                    // loan
+                    return Loan.query(on: req).filter(\.id == bill.accountId).filter(\.isDel == false).first().flatMap({ (loan) -> Future<BillVO?> in
+                        var billVO : BillVO?
+                        if let loan = loan {
+                            billVO =  BillVO(id: bill.id!, accountName: loan.name, accountNo: "", accountType: bill.accountType, status: bill.status, money: bill.money, reimnursementDate: bill.reimnursementDate)
+                        }
+                        return req.future(billVO)
+                    })
+                    
+                } else {
+                    // card
+                    return Account.query(on: req).filter(\.id == bill.accountId).filter(\.isDel == false).first().flatMap({ (account)  in
+                        var billVO : BillVO?
+                        if let account = account {
+                            billVO =  BillVO(id: bill.id!, accountName: account.name, accountNo: account.cardNo, accountType: bill.accountType, status: bill.status, money: bill.money, reimnursementDate: bill.reimnursementDate)
+                        }
+                        return req.future(billVO)
+                    })
+                }
+            }).flatten(on: req).flatMap({ (bills)  in
+                
+                let arr = bills.filter({
+                    $0 != nil
+                }).map({
+                    $0!
+                })
+                
+                return req.future(arr)
+                
+            })
+        }
     }
     
     /// 查询自己所有的账单

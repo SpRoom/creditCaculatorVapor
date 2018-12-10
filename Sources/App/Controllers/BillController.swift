@@ -83,6 +83,16 @@ struct BillController {
         
     }
     
+    /// 待还款账单
+    func needRepaymentBills(_ req: Request) throws -> Future<Response> {
+        
+        let billModel = BillModel()
+        
+        return try billModel.needRepaymentBills(req: req).flatMap({ (bills)  in
+            let json = ResponseJSON(data: bills)
+            return try VaporResponseUtil.makeResponse(req: req, vo: json)
+        })
+    }
     
     /// 查询自己所有的账单
     ///

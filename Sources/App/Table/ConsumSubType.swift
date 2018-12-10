@@ -14,4 +14,6 @@ struct ConsumSubType : BaseSQLModel {
     var parentId: Int
     /// 名称
     var name: String
+    /// 添加时间
+    var createTime: TimeInterval
 }

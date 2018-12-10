@@ -24,4 +24,6 @@ struct CreditConsumptionBill : BaseSQLModel {
     var remark: String
     /// 是否删除
     var isDel: Bool
+    /// 添加时间
+    var createTime: TimeInterval
 }

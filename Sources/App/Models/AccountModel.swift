@@ -165,7 +165,7 @@ struct AccountModel {
         
         let user = try req.authed(User.self)!
         
-        let account = Account.init(id: nil, userID: user.userID, accountTypeId: accountTypeId, name: name, cardNo: cardNo, lines: lines, temporaryLines: temporaryLines, billDate: billDate, reimsementDate: reimsementDate, userLines: 0,isDel: false)
+        let account = Account.init(id: nil, userID: user.userID, accountTypeId: accountTypeId, name: name, cardNo: cardNo, lines: lines, temporaryLines: temporaryLines, billDate: billDate, reimsementDate: reimsementDate, userLines: 0,isDel: false, createTime: Date().timeIntervalSince1970)
         
         return req.withPooledConnection(to: sqltype, closure: { (conn)  in
             return conn.transaction(on: sqltype, { (conn)  in
@@ -188,7 +188,7 @@ struct AccountModel {
         
         return req.withPooledConnection(to: sqltype, closure: { (conn)  in
             return conn.transaction(on: sqltype, { (conn)  in
-                return AccountType(name: name).save(on: conn).flatMap({ type in
+                return AccountType(id: nil,name: name, createTime: Date().timeIntervalSince1970).save(on: conn).flatMap({ type in
                     return req.future(type)
                 })
             })
